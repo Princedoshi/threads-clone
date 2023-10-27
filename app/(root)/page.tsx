@@ -1,8 +1,12 @@
+import { fetchPosts } from "@/lib/actions/thread.actions";
 import { UserButton } from "@clerk/nextjs";
  
 export default async function Home() {
 
-  // const result = await fetchPosts();
+  const result = await fetchPosts(1,3);
+
+  console.log(result);
+
 
 
   return (

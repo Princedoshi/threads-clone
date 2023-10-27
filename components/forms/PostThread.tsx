@@ -1,53 +1,53 @@
-"use client"
+"use client";
 
-import { Form } from "@/components/ui/form";
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Button } from "@/components/ui/button"
-import { ThreadValidation } from "@/lib/validations/thread";
-import { useForm } from 'react-hook-form';
-import {
-    FormControl,
-    FormDescription,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import * as z from "zod"
-import { Textarea } from "../ui/textarea";
+import * as z from "zod";
+import { useForm } from "react-hook-form";
+import { useOrganization } from "@clerk/nextjs";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { usePathname, useRouter } from "next/navigation";
+
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+
+import { ThreadValidation } from "@/lib/validations/thread";
 import { createThread } from "@/lib/actions/thread.actions";
 
 interface Props {
-    userId: string;
-  }
-  
+  userId: string;
+}
 
-  function PostThread({ userId }: Props) {
-    const router = useRouter();
-    const pathname = usePathname();
+function PostThread({ userId }: Props) {
+  const router = useRouter();
+  const pathname = usePathname();
 
+  const { organization } = useOrganization();
 
-    const form = useForm<z.infer<typeof ThreadValidation>>({
-        resolver: zodResolver(ThreadValidation),
-        defaultValues: {
-          thread: "",
-          accountId: userId,
-        },
-      });
+  const form = useForm<z.infer<typeof ThreadValidation>>({
+    resolver: zodResolver(ThreadValidation),
+    defaultValues: {
+      thread: "",
+      accountId: userId,
+    },
+  });
 
-     const onSubmit = async (values: z.infer<typeof ThreadValidation>) => {
+  const onSubmit = async (values: z.infer<typeof ThreadValidation>) => {
     await createThread({
       text: values.thread,
       author: userId,
-      communityId: null,
+      communityId: organization ? organization.id : null,
       path: pathname,
     });
 
     router.push("/");
   };
-
 
   return (
     <Form {...form}>

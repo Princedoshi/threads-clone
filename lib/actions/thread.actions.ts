@@ -40,8 +40,10 @@ export async function createThread({text,author,communityId,path}:Params){
 export async function fetchPosts(pageNumber = 1, pageSize = 20) {
     connectToDB();
   
+    // Calculate the number of posts to skip based on the page number and page size.
     const skipAmount = (pageNumber - 1) * pageSize;
   
+// Create a query tead                 
     const postsQuery = Thread.find({ parentId: { $in: [null, undefined] } })
       .sort({ createdAt: "desc" })
       .skip(skipAmount)
